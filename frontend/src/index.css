@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+:root {
+  font-family: 'DM Sans', 'Trebuchet MS', sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #23332d;
+  background: #f2f5f2;
+  color-scheme: light;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; min-height: 100vh; }
+button, input, select, textarea { font: inherit; }
+a { color: inherit; }
