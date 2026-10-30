@@ -1,0 +1,80 @@
+{
+  "info": {
+    "_postman_id": "6b3b190a-17f7-4a43-92dc-8a5af9c1a301",
+    "name": "BarangayBook API",
+    "description": "Laravel Sanctum API. Set baseUrl and token in the collection variables. Login saves the returned token automatically.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://127.0.0.1:8000/api" },
+    { "key": "token", "value": "" },
+    { "key": "reservationId", "value": "1" },
+    { "key": "facilityId", "value": "1" },
+    { "key": "equipmentId", "value": "1" },
+    { "key": "categoryId", "value": "1" }
+  ],
+  "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        { "name": "Register resident", "request": { "method": "POST", "url": "{{baseUrl}}/register", "auth": { "type": "noauth" }, "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Ana Reyes\",\n  \"email\": \"ana@example.test\",\n  \"password\": \"password123\",\n  \"password_confirmation\": \"password123\",\n  \"phone\": \"0917-555-0101\",\n  \"purok\": \"Purok 2\"\n}", "options": { "raw": { "language": "json" } } } } },
+        { "name": "Login", "request": { "method": "POST", "url": "{{baseUrl}}/login", "auth": { "type": "noauth" }, "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"email\": \"admin@barangaybook.test\",\n  \"password\": \"password\"\n}", "options": { "raw": { "language": "json" } } } }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["if (pm.response.code === 200) { pm.collectionVariables.set('token', pm.response.json().token); }"] } }] },
+        { "name": "Current user", "request": { "method": "GET", "url": "{{baseUrl}}/user" } },
+        { "name": "Logout", "request": { "method": "POST", "url": "{{baseUrl}}/logout" } }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        { "name": "Get role dashboard", "request": { "method": "GET", "url": "{{baseUrl}}/dashboard" } }
+      ]
+    },
+    {
+      "name": "Reservations",
+      "item": [
+        { "name": "List and filter reservations", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/reservations?search=&status=&facility_id=&date_from=&date_to=&page=1", "host": ["{{baseUrl}}"], "path": ["reservations"], "query": [{ "key": "search", "value": "" }, { "key": "status", "value": "" }, { "key": "facility_id", "value": "" }, { "key": "date_from", "value": "" }, { "key": "date_to", "value": "" }, { "key": "page", "value": "1" }] } } },
+        { "name": "Create reservation", "request": { "method": "POST", "url": "{{baseUrl}}/reservations", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"facility_id\": {{facilityId}},\n  \"event_date\": \"2030-06-15\",\n  \"start_time\": \"09:00\",\n  \"end_time\": \"12:00\",\n  \"purpose\": \"Purok community meeting\",\n  \"expected_guests\": 45,\n  \"equipment\": [{ \"equipment_id\": {{equipmentId}}, \"quantity\": 20 }]\n}", "options": { "raw": { "language": "json" } } } } },
+        { "name": "Show reservation", "request": { "method": "GET", "url": "{{baseUrl}}/reservations/{{reservationId}}" } },
+        { "name": "Update pending reservation", "request": { "method": "PUT", "url": "{{baseUrl}}/reservations/{{reservationId}}", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"facility_id\": {{facilityId}},\n  \"event_date\": \"2030-06-16\",\n  \"start_time\": \"13:00\",\n  \"end_time\": \"16:00\",\n  \"purpose\": \"Updated community meeting\",\n  \"expected_guests\": 35,\n  \"equipment\": []\n}", "options": { "raw": { "language": "json" } } } } },
+        { "name": "Cancel pending reservation", "request": { "method": "DELETE", "url": "{{baseUrl}}/reservations/{{reservationId}}" } },
+        { "name": "Approve reservation (admin)", "request": { "method": "PATCH", "url": "{{baseUrl}}/reservations/{{reservationId}}/status", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"status\": \"approved\",\n  \"admin_remarks\": \"Schedule confirmed.\"\n}", "options": { "raw": { "language": "json" } } } } },
+        { "name": "Reject reservation (admin)", "request": { "method": "PATCH", "url": "{{baseUrl}}/reservations/{{reservationId}}/status", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"status\": \"rejected\",\n  \"admin_remarks\": \"The venue is unavailable for that time.\"\n}", "options": { "raw": { "language": "json" } } } } },
+        { "name": "Mark reservation completed (admin)", "request": { "method": "PATCH", "url": "{{baseUrl}}/reservations/{{reservationId}}/status", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"status\": \"completed\"\n}", "options": { "raw": { "language": "json" } } } } }
+      ]
+    },
+    {
+      "name": "Facilities",
+      "item": [
+        { "name": "List facilities", "request": { "method": "GET", "url": "{{baseUrl}}/facilities" } },
+        { "name": "Facility dropdown options", "request": { "method": "GET", "url": "{{baseUrl}}/facilities/options" } },
+        { "name": "Show facility", "request": { "method": "GET", "url": "{{baseUrl}}/facilities/{{facilityId}}" } },
+        { "name": "Create facility (admin)", "request": { "method": "POST", "url": "{{baseUrl}}/facilities", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Barangay Training Room\",\n  \"description\": \"Room for community workshops.\",\n  \"capacity\": 60,\n  \"fee\": 500,\n  \"is_active\": true\n}", "options": { "raw": { "language": "json" } } } } },
+        { "name": "Update facility (admin)", "request": { "method": "PUT", "url": "{{baseUrl}}/facilities/{{facilityId}}", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Barangay Training Room\",\n  \"description\": \"Room for community workshops.\",\n  \"capacity\": 70,\n  \"fee\": 500,\n  \"is_active\": true\n}", "options": { "raw": { "language": "json" } } } } },
+        { "name": "Delete facility (admin)", "request": { "method": "DELETE", "url": "{{baseUrl}}/facilities/{{facilityId}}" } }
+      ]
+    },
+    {
+      "name": "Equipment",
+      "item": [
+        { "name": "List and search equipment", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/equipment?search=&category_id=&page=1", "host": ["{{baseUrl}}"], "path": ["equipment"], "query": [{ "key": "search", "value": "" }, { "key": "category_id", "value": "" }, { "key": "page", "value": "1" }] } } },
+        { "name": "Equipment dropdown options and schedule availability", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/equipment/options?event_date=2030-06-15&start_time=09%3A00&end_time=12%3A00", "host": ["{{baseUrl}}"], "path": ["equipment", "options"], "query": [{ "key": "event_date", "value": "2030-06-15" }, { "key": "start_time", "value": "09:00" }, { "key": "end_time", "value": "12:00" }] } } },
+        { "name": "Show equipment", "request": { "method": "GET", "url": "{{baseUrl}}/equipment/{{equipmentId}}" } },
+        { "name": "Create equipment (admin)", "request": { "method": "POST", "url": "{{baseUrl}}/equipment", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"category_id\": {{categoryId}},\n  \"name\": \"Folding Chairs\",\n  \"total_quantity\": 40,\n  \"condition\": \"good\"\n}", "options": { "raw": { "language": "json" } } } } },
+        { "name": "Update equipment (admin)", "request": { "method": "PUT", "url": "{{baseUrl}}/equipment/{{equipmentId}}", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"category_id\": {{categoryId}},\n  \"name\": \"Folding Chairs\",\n  \"total_quantity\": 45,\n  \"condition\": \"good\"\n}", "options": { "raw": { "language": "json" } } } } },
+        { "name": "Delete equipment (admin)", "request": { "method": "DELETE", "url": "{{baseUrl}}/equipment/{{equipmentId}}" } }
+      ]
+    },
+    {
+      "name": "Equipment Categories",
+      "item": [
+        { "name": "List categories", "request": { "method": "GET", "url": "{{baseUrl}}/equipment-categories" } },
+        { "name": "Category dropdown options", "request": { "method": "GET", "url": "{{baseUrl}}/equipment-categories/options" } },
+        { "name": "Show category", "request": { "method": "GET", "url": "{{baseUrl}}/equipment-categories/{{categoryId}}" } },
+        { "name": "Create category (admin)", "request": { "method": "POST", "url": "{{baseUrl}}/equipment-categories", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Cleaning Supplies\"\n}", "options": { "raw": { "language": "json" } } } } },
+        { "name": "Update category (admin)", "request": { "method": "PUT", "url": "{{baseUrl}}/equipment-categories/{{categoryId}}", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Cleaning and Maintenance\"\n}", "options": { "raw": { "language": "json" } } } } },
+        { "name": "Delete category (admin)", "request": { "method": "DELETE", "url": "{{baseUrl}}/equipment-categories/{{categoryId}}" } }
+      ]
+    }
+  ]
+}
